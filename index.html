@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Blok Kirma Oyunu</title>
+    <style>
+        body {
+            background-color: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+            color: white;
+        }
+        /* Oyun Alanımızın Çerçevesi */
+        canvas {
+            background-color: #000;
+            border: 3px solid #00ffcc;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Oyun Tuvali (600x400 piksel) -->
+    <canvas id="oyunAlani" width="600" height="400"></canvas>
+
+<script>
+    // 1. Tuval ve Çizim Kalemini Alıyoruz
+    const canvas = document.getElementById("oyunAlani");
+    const ctx = canvas.getContext("2d");
+
+    // 2. Palet (Raket) Değişkenleri
+    const paletYukseklik = 12;
+    const paletGenislik = 90;
+    let paletX = (canvas.width - paletGenislik) / 2; // Başlangıçta tam ortada dursun
+    const paletHizi = 7; // Sağa sola kaç piksel kaysın?
+
+    // Tuş Basılma Durumları
+    let sagTus = false;
+    let solTus = false;
+
+    // 3. Klavye Dinleyicileri (Tuşa basıldı mı, bırakıldı mı?)
+    document.addEventListener("keydown", tusBasildi);
+    document.addEventListener("keyup", tusBrakildi);
+
+    function tusBasildi(e) {
+        if (e.key === "Right" || e.key === "ArrowRight") sagTus = true;
+        if (e.key === "Left" || e.key === "ArrowLeft") solTus = true;
+    }
+
+    function tusBrakildi(e) {
+        if (e.key === "Right" || e.key === "ArrowRight") sagTus = false;
+        if (e.key === "Left" || e.key === "ArrowLeft") solTus = false;
+    }
+
+    // 4. Paleti Çizen Fonksiyon
+    function paletCiz() {
+        ctx.beginPath();
+        // rect(X_koordinatı, Y_koordinatı, Genişlik, Yükseklik)
+        ctx.rect(paletX, canvas.height - paletYukseklik - 10, paletGenislik, paletYukseklik);
+        ctx.fillStyle = "#00ffcc"; // Paletin rengi
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    // 5. OYUN DÖNGÜSÜ (Game Loop)
+    function oyunDongusu() {
+        // Ekranı her karede temizle ki arkasında iz bırakmasın
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Paleti Çiz
+        paletCiz();
+
+        // Klavye Kontrollerine Göre Paleti Hareket Ettir (Sınırlara Dikkatederek)
+        if (sagTus && paletX < canvas.width - paletGenislik) {
+            paletX += paletHizi;
+        } else if (solTus && paletX > 0) {
+            paletX -= paletHizi;
+        }
+
+        // Saniyede 60 kare hızında bu fonksiyonu tekrar çalıştır
+        requestAnimationFrame(oyunDongusu);
+    }
+
+    // Oyunu Başlat
+    oyunDongusu();
+</script>
+</body>
+</html>
