@@ -8,4 +8,5 @@ var ctx = c.getContext("2d");
 
 
 
+
 ctx.fillReckt(0,0,c.width,c.height);
